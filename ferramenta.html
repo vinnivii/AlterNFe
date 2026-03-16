@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Corretor e Recálculo de NFe</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+        .container { max-width: 600px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #333; text-align: center; }
+        label { font-weight: bold; margin-top: 15px; display: block; color: #555; }
+        input[type="file"], input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 15px; background: #0056b3; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #004494; }
+        #mensagem { margin-top: 20px; font-weight: bold; text-align: center; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🛠️ Ferramenta de Correção NFe</h2>
+        
+        <label>1. Selecione o XML da NFe com erro:</label>
+        <input type="file" id="fileInput" accept=".xml">
+
+        <label>2. Novo Total de Produtos (R$):</label>
+        <input type="number" id="valorInput" step="0.01" value="130990.48">
+
+        <button onclick="processarXML()">Processar e Baixar XML</button>
+        <div id="mensagem"></div>
+    </div>
+
+    <script>
+        function processarXML() {
+            const fileInput = document.getElementById('fileInput');
+            const valorInput = document.getElementById('valorInput').value;
+            const mensagem = document.getElementById('mensagem');
+
+            if (fileInput.files.length === 0) {
+                mensagem.style.backgroundColor = "#ffdddd";
+                mensagem.style.color = "red";
+                mensagem.innerText = "Por favor, selecione um arquivo XML primeiro.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const novoTotal = parseFloat(valorInput);
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                let xml = e.target.result;
+                try {
+                    // --- 1. CORREÇÕES ESTRUTURAIS ---
+                    xml = xml.replace('MaceiÃ³', 'Maceió');
+                    xml = xml.replace('<NFe xmlns="http://www.portalfiscal.inf.br/nfe">', '<NFe xmlns="http://www.portalfiscal.inf.br/nfe" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#">');
+                    xml = xml.replace('<protNFe versao="4.00">', '<protNFe versao="4.00" xmlns="http://www.portalfiscal.inf.br/nfe">');
+                    xml = xml.replace('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">', '<ns1:Signature>');
+                    xml = xml.replace('</Signature>', '</ns1:Signature>');
+
+                    const tagsAssinatura = ['SignedInfo', 'CanonicalizationMethod', 'SignatureMethod', 'Reference', 'Transforms', 'Transform', 'DigestMethod', 'DigestValue', 'SignatureValue', 'KeyInfo', 'X509Data', 'X509Certificate'];
+                    tagsAssinatura.forEach(tag => {
+                        xml = xml.replace(new RegExp(`<${tag}(\\s|>)`, 'g'), `<ns1:${tag}$1`);
+                        xml = xml.replace(new RegExp(`<\/${tag}>`, 'g'), `</ns1:${tag}>`);
+                        xml = xml.replace(new RegExp(`<${tag}\\s*\/>`, 'g'), `<ns1:${tag}/>`);
+                    });
+
+                    // --- 2. RECÁLCULO DOS VALORES ---
+                    const matchTotalAtual = xml.match(/<ICMSTot>[\s\S]*?<vProd>([\d\.]+)<\/vProd>/);
+                    if (!matchTotalAtual) throw new Error("Tag <vProd> não encontrada no totalizador.");
+                    
+                    const valorAtual = parseFloat(matchTotalAtual[1]);
+                    const fator = novoTotal / valorAtual;
+
+                    const regexDet = /<det nItem="\d+">[\s\S]*?<\/det>/g;
+                    const dets = xml.match(regexDet);
+                    let somaNovosProdutos = 0.0;
+
+                    dets.forEach((det, index) => {
+                        let vProdAntigo = parseFloat(det.match(/<vProd>([\d\.]+)<\/vProd>/)[1]);
+                        let qCom = parseFloat(det.match(/<qCom>([\d\.]+)<\/qCom>/)[1]);
+                        let qTrib = parseFloat(det.match(/<qTrib>([\d\.]+)<\/qTrib>/)[1]);
+
+                        let vProdNovo;
+                        // Ajuste de centavos no último item
+                        if (index === dets.length - 1) {
+                            vProdNovo = +(novoTotal - somaNovosProdutos).toFixed(2);
+                        } else {
+                            vProdNovo = +(vProdAntigo * fator).toFixed(2);
+                            somaNovosProdutos += vProdNovo;
+                        }
+
+                        let vUnComNovo = vProdNovo / qCom;
+                        let vUnTribNovo = vProdNovo / qTrib;
+
+                        let detNovo = det.replace(/<vProd>[\d\.]+<\/vProd>/, `<vProd>${vProdNovo.toFixed(2)}</vProd>`);
+                        detNovo = detNovo.replace(/<vUnCom>[\d\.]+<\/vUnCom>/, `<vUnCom>${vUnComNovo.toFixed(10)}</vUnCom>`);
+                        detNovo = detNovo.replace(/<vUnTrib>[\d\.]+<\/vUnTrib>/, `<vUnTrib>${vUnTribNovo.toFixed(10)}</vUnTrib>`);
+                        
+                        if (detNovo.includes('<vItem>')) {
+                            detNovo = detNovo.replace(/<vItem>[\d\.]+<\/vItem>/, `<vItem>${vProdNovo.toFixed(2)}</vItem>`);
+                        }
+
+                        xml = xml.replace(det, detNovo);
+                    });
+
+                    // --- 3. ATUALIZAÇÃO DOS TOTALIZADORES ---
+                    xml = xml.replace(/(<ICMSTot>[\s\S]*?<vProd>)[\d\.]+([\s\S]*?<\/vProd>)/, `$1${novoTotal.toFixed(2)}$2`);
+
+                    const icmsTotBlock = xml.match(/<ICMSTot>[\s\S]*?<\/ICMSTot>/)[0];
+                    let somaImpostos = 0.0;
+                    const tagsImpostos = ['vII', 'vIPI', 'vPIS', 'vCOFINS', 'vOutro'];
+                    
+                    tagsImpostos.forEach(tag => {
+                        const matchTag = icmsTotBlock.match(new RegExp(`<${tag}>([\\d\\.]+)<\/${tag}>`));
+                        if (matchTag) {
+                            somaImpostos += parseFloat(matchTag[1]);
+                        }
+                    });
+
+                    const novoVnf = novoTotal + somaImpostos;
+
+                    xml = xml.replace(/(<ICMSTot>[\s\S]*?<vNF>)[\d\.]+([\s\S]*?<\/vNF>)/, `$1${novoVnf.toFixed(2)}$2`);
+                    xml = xml.replace(/<vNFTot>[\d\.]+<\/vNFTot>/, `<vNFTot>${novoVnf.toFixed(2)}</vNFTot>`);
+
+                    // --- 4. DOWNLOAD AUTOMÁTICO ---
+                    const blob = new Blob([xml], { type: 'text/xml' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "Corrigido_" + file.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    mensagem.style.backgroundColor = "#ddffdd";
+                    mensagem.style.color = "green";
+                    mensagem.innerText = `Sucesso! Novo Valor Total: R$ ${novoVnf.toFixed(2)}. Download iniciado.`;
+
+                } catch (error) {
+                    mensagem.style.backgroundColor = "#ffdddd";
+                    mensagem.style.color = "red";
+                    mensagem.innerText = "Erro ao processar: " + error.message;
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
