@@ -2,42 +2,213 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Corretor e Recálculo de NFe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corretor e Recálculo de NFe v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
-        .container { max-width: 600px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #333; text-align: center; }
-        label { font-weight: bold; margin-top: 15px; display: block; color: #555; }
-        input[type="file"], input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 100%; padding: 15px; background: #0056b3; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #004494; }
-        #mensagem { margin-top: 20px; font-weight: bold; text-align: center; padding: 10px; border-radius: 4px; }
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border-color: #334155;
+            --success-bg: #064e3b;
+            --success-text: #34d399;
+            --error-bg: #7f1d1d;
+            --error-text: #f87171;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 30px;
+            background: -webkit-linear-gradient(45deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Estilização do Upload de Arquivo */
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            background-color: rgba(15, 23, 42, 0.5);
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-text {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-name {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Estilização do Input de Número */
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Estilização do Botão */
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #mensagem {
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .nota {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🛠️ Ferramenta de Correção NFe</h2>
+        <h2>Rateio e Recálculo NFe</h2>
         
-        <label>1. Selecione o XML da NFe com erro:</label>
-        <input type="file" id="fileInput" accept=".xml">
+        <label>1. Selecione o XML da NFe:</label>
+        <div class="file-upload-wrapper">
+            <span class="file-upload-text">📂 Clique ou arraste o arquivo</span>
+            <span class="file-name" id="fileName">Nenhum arquivo selecionado</span>
+            <input type="file" id="fileInput" accept=".xml">
+        </div>
 
         <label>2. Novo Total de Produtos (R$):</label>
         <input type="number" id="valorInput" step="0.01" value="130990.48">
 
-        <button onclick="processarXML()">Processar e Baixar XML</button>
+        <button onclick="processarXML()">Recalcular e Baixar XML</button>
         <div id="mensagem"></div>
+        <div class="nota">*Atenção: A alteração de valores invalida a Assinatura Digital original. O sistema emissor precisará gerar uma nova chave/assinatura.</div>
     </div>
 
     <script>
+        // Atualiza o texto com o nome do arquivo selecionado
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
         function processarXML() {
             const fileInput = document.getElementById('fileInput');
             const valorInput = document.getElementById('valorInput').value;
             const mensagem = document.getElementById('mensagem');
 
+            mensagem.style.display = "block"; // Mostra a caixa de mensagem
+
             if (fileInput.files.length === 0) {
-                mensagem.style.backgroundColor = "#ffdddd";
-                mensagem.style.color = "red";
-                mensagem.innerText = "Por favor, selecione um arquivo XML primeiro.";
+                mensagem.style.backgroundColor = "var(--error-bg)";
+                mensagem.style.color = "var(--error-text)";
+                mensagem.innerText = "⚠️ Por favor, selecione um arquivo XML primeiro.";
                 return;
             }
 
@@ -48,19 +219,24 @@
             reader.onload = function(e) {
                 let xml = e.target.result;
                 try {
-                    // --- 1. CORREÇÕES ESTRUTURAIS ---
-                    xml = xml.replace('MaceiÃ³', 'Maceió');
-                    xml = xml.replace('<NFe xmlns="http://www.portalfiscal.inf.br/nfe">', '<NFe xmlns="http://www.portalfiscal.inf.br/nfe" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#">');
-                    xml = xml.replace('<protNFe versao="4.00">', '<protNFe versao="4.00" xmlns="http://www.portalfiscal.inf.br/nfe">');
-                    xml = xml.replace('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">', '<ns1:Signature>');
-                    xml = xml.replace('</Signature>', '</ns1:Signature>');
+                    // --- 1. CORREÇÕES ESTRUTURAIS CONDICIONAIS ---
+                    if (xml.includes('MaceiÃ³')) {
+                        xml = xml.replace(/MaceiÃ³/g, 'Maceió');
+                    }
 
-                    const tagsAssinatura = ['SignedInfo', 'CanonicalizationMethod', 'SignatureMethod', 'Reference', 'Transforms', 'Transform', 'DigestMethod', 'DigestValue', 'SignatureValue', 'KeyInfo', 'X509Data', 'X509Certificate'];
-                    tagsAssinatura.forEach(tag => {
-                        xml = xml.replace(new RegExp(`<${tag}(\\s|>)`, 'g'), `<ns1:${tag}$1`);
-                        xml = xml.replace(new RegExp(`<\/${tag}>`, 'g'), `</ns1:${tag}>`);
-                        xml = xml.replace(new RegExp(`<${tag}\\s*\/>`, 'g'), `<ns1:${tag}/>`);
-                    });
+                    if (xml.includes('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">')) {
+                        xml = xml.replace('<NFe xmlns="http://www.portalfiscal.inf.br/nfe">', '<NFe xmlns="http://www.portalfiscal.inf.br/nfe" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#">');
+                        xml = xml.replace('<protNFe versao="4.00">', '<protNFe versao="4.00" xmlns="http://www.portalfiscal.inf.br/nfe">');
+                        xml = xml.replace('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">', '<ns1:Signature>');
+                        xml = xml.replace('</Signature>', '</ns1:Signature>');
+
+                        const tagsAssinatura = ['SignedInfo', 'CanonicalizationMethod', 'SignatureMethod', 'Reference', 'Transforms', 'Transform', 'DigestMethod', 'DigestValue', 'SignatureValue', 'KeyInfo', 'X509Data', 'X509Certificate'];
+                        tagsAssinatura.forEach(tag => {
+                            xml = xml.replace(new RegExp(`<${tag}(\\s|>)`, 'g'), `<ns1:${tag}$1`);
+                            xml = xml.replace(new RegExp(`</${tag}>`, 'g'), `</ns1:${tag}>`);
+                            xml = xml.replace(new RegExp(`<${tag}\\s*/>`, 'g'), `<ns1:${tag}/>`);
+                        });
+                    }
 
                     // --- 2. RECÁLCULO DOS VALORES ---
                     const matchTotalAtual = xml.match(/<ICMSTot>[\s\S]*?<vProd>([\d\.]+)<\/vProd>/);
@@ -79,7 +255,6 @@
                         let qTrib = parseFloat(det.match(/<qTrib>([\d\.]+)<\/qTrib>/)[1]);
 
                         let vProdNovo;
-                        // Ajuste de centavos no último item
                         if (index === dets.length - 1) {
                             vProdNovo = +(novoTotal - somaNovosProdutos).toFixed(2);
                         } else {
@@ -106,12 +281,16 @@
 
                     const icmsTotBlock = xml.match(/<ICMSTot>[\s\S]*?<\/ICMSTot>/)[0];
                     let somaImpostos = 0.0;
-                    const tagsImpostos = ['vII', 'vIPI', 'vPIS', 'vCOFINS', 'vOutro'];
+                    const tagsImpostos = ['vII', 'vIPI', 'vPIS', 'vCOFINS', 'vOutro', 'vFrete', 'vSeg', 'vDesc', 'vST', 'vFCPST'];
                     
                     tagsImpostos.forEach(tag => {
                         const matchTag = icmsTotBlock.match(new RegExp(`<${tag}>([\\d\\.]+)<\/${tag}>`));
                         if (matchTag) {
-                            somaImpostos += parseFloat(matchTag[1]);
+                            if(tag === 'vDesc') {
+                                somaImpostos -= parseFloat(matchTag[1]);
+                            } else {
+                                somaImpostos += parseFloat(matchTag[1]);
+                            }
                         }
                     });
 
@@ -125,20 +304,20 @@
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = "Corrigido_" + file.name;
+                    a.download = "Recalculado_" + file.name;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
 
-                    mensagem.style.backgroundColor = "#ddffdd";
-                    mensagem.style.color = "green";
-                    mensagem.innerText = `Sucesso! Novo Valor Total: R$ ${novoVnf.toFixed(2)}. Download iniciado.`;
+                    mensagem.style.backgroundColor = "var(--success-bg)";
+                    mensagem.style.color = "var(--success-text)";
+                    mensagem.innerText = `✅ Sucesso! Novo Total: R$ ${novoVnf.toFixed(2)}. Download iniciado.`;
 
                 } catch (error) {
-                    mensagem.style.backgroundColor = "#ffdddd";
-                    mensagem.style.color = "red";
-                    mensagem.innerText = "Erro ao processar: " + error.message;
+                    mensagem.style.backgroundColor = "var(--error-bg)";
+                    mensagem.style.color = "var(--error-text)";
+                    mensagem.innerText = "❌ Erro ao processar: " + error.message;
                 }
             };
             reader.readAsText(file);
