@@ -7,17 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
+            --bg-color: #050505;
+            --card-bg: #0a0a0a;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-hover: #0ea5e9;
-            --border-color: #334155;
-            --success-bg: #064e3b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-color: #1e293b;
+            --success-bg: rgba(52, 211, 153, 0.1);
             --success-text: #34d399;
-            --error-bg: #7f1d1d;
+            --error-bg: rgba(248, 113, 113, 0.1);
             --error-text: #f87171;
+            --glass-bg: rgba(30, 41, 59, 0.3);
         }
 
         body {
@@ -35,12 +36,24 @@
         .container {
             width: 100%;
             max-width: 500px;
-            background: var(--card-bg);
+            background: linear-gradient(145deg, var(--card-bg), #000000);
             padding: 40px 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
             animation: fadeIn 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
         }
 
         @keyframes fadeIn {
@@ -53,9 +66,10 @@
             font-weight: 800;
             margin-top: 0;
             margin-bottom: 30px;
-            background: -webkit-linear-gradient(45deg, #38bdf8, #818cf8);
+            background: -webkit-linear-gradient(45deg, #60a5fa, #1e3a8a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
         label {
@@ -66,12 +80,11 @@
             display: block;
         }
 
-        /* Estilização do Upload de Arquivo */
         .file-upload-wrapper {
             position: relative;
             width: 100%;
             height: 100px;
-            border: 2px dashed var(--border-color);
+            border: 1px dashed var(--border-color);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -79,7 +92,7 @@
             align-items: center;
             margin-bottom: 25px;
             transition: all 0.3s ease;
-            background-color: rgba(15, 23, 42, 0.5);
+            background-color: var(--glass-bg);
             cursor: pointer;
         }
 
@@ -134,13 +147,14 @@
             padding: 16px;
             background: linear-gradient(135deg, var(--accent), var(--accent-hover));
             color: white;
-            border: none;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
         button:hover {
@@ -170,33 +184,238 @@
             margin-top: 20px;
             line-height: 1.5;
         }
+
+        /* Estilização das Abas */
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: none;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover {
+            color: var(--text-main);
+            transform: none;
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+            background: rgba(56, 189, 248, 0.05);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Log do Caçador */
+        .log-area {
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .log-item {
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 6px;
+        }
+        .log-success { color: var(--success-text); }
+        .log-warning { color: #facc15; }
+        .log-info { color: var(--accent); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Rateio e Recálculo NFe</h2>
+        <h2>AlterNFe Tools</h2>
         
-        <label>1. Selecione o XML da NFe:</label>
-        <div class="file-upload-wrapper">
-            <span class="file-upload-text">📂 Clique ou arraste o arquivo</span>
-            <span class="file-name" id="fileName">Nenhum arquivo selecionado</span>
-            <input type="file" id="fileInput" accept=".xml">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('tab-rateio')">Rateio e Recálculo</button>
+            <button class="tab-btn" onclick="openTab('tab-cacador')">Divergência de BC ICMS</button>
         </div>
 
-        <label>2. Novo Total de Produtos (R$):</label>
-        <input type="number" id="valorInput" step="0.01" value="130990.48">
+        <!-- TAB 1: RATEIO E RECÁLCULO -->
+        <div id="tab-rateio" class="tab-content active">
+            <label>1. Selecione o XML da NFe:</label>
+            <div class="file-upload-wrapper">
+                <span class="file-upload-text">📂 Clique ou arraste o arquivo</span>
+                <span class="file-name" id="fileName">Nenhum arquivo selecionado</span>
+                <input type="file" id="fileInput" accept=".xml">
+            </div>
 
-        <button onclick="processarXML()">Recalcular e Baixar XML</button>
-        <div id="mensagem"></div>
-        <div class="nota">*Atenção: A alteração de valores invalida a Assinatura Digital original. O sistema emissor precisará gerar uma nova chave/assinatura.</div>
+            <label>2. Novo Total de Produtos (R$):</label>
+            <input type="number" id="valorInput" step="0.01" value="130990.48">
+
+            <button onclick="processarXML()">Recalcular e Baixar XML</button>
+            <div id="mensagem"></div>
+            <div class="nota">*Atenção: A alteração de valores invalida a Assinatura Digital original. O sistema emissor precisará gerar uma nova chave/assinatura.</div>
+        </div>
+
+        <!-- TAB 2: CAÇADOR DE DIVERGÊNCIAS -->
+        <div id="tab-cacador" class="tab-content">
+            <label>1. Selecione o XML com erro do NFeManager:</label>
+            <div class="file-upload-wrapper">
+                <span class="file-upload-text">📂 Clique ou arraste o arquivo</span>
+                <span class="file-name" id="fileNameCacador">Nenhum arquivo selecionado</span>
+                <input type="file" id="fileInputCacador" accept=".xml">
+            </div>
+
+            <button onclick="analisarECorrigirXML()" style="background: linear-gradient(135deg, #1e3a8a, #0f172a); border-color: #3b82f6;">Analisar Divergências</button>
+            <div id="logCacador" class="log-area"></div>
+            <button id="btnBaixarCorrigido" onclick="baixarXMLCorrigido()" style="display: none; margin-top: 15px; background: linear-gradient(135deg, #059669, #047857);">Baixar XML Corrigido</button>
+            <div class="nota">*Atenção: Este processo foca apenas na correção de centavos da Base de Cálculo do ICMS. O arquivo baixado ainda precisará ser re-assinado se for transmitido novamente.</div>
+        </div>
     </div>
 
     <script>
+        // --- CONTROLE DE ABAS ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // --- ABA 1: RATEIO E RECÁLCULO ---
         // Atualiza o texto com o nome do arquivo selecionado
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const fileName = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado';
             document.getElementById('fileName').textContent = fileName;
         });
+
+        // --- ABA 2: CAÇADOR DE DIVERGÊNCIAS ---
+        let xmlCorrigidoCache = null;
+        let fileNameCache = "";
+
+        document.getElementById('fileInputCacador').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado';
+            document.getElementById('fileNameCacador').textContent = fileName;
+            document.getElementById('btnBaixarCorrigido').style.display = 'none';
+            xmlCorrigidoCache = null;
+        });
+
+        function analisarECorrigirXML() {
+            const fileInput = document.getElementById('fileInputCacador');
+            const logArea = document.getElementById('logCacador');
+            const btnBaixar = document.getElementById('btnBaixarCorrigido');
+            
+            logArea.style.display = 'block';
+            logArea.innerHTML = '<div class="log-item log-info">Iniciando análise...</div>';
+            btnBaixar.style.display = 'none';
+            xmlCorrigidoCache = null;
+
+            if (!fileInput.files.length) {
+                logArea.innerHTML += '<div class="log-item log-warning">⚠️ Erro: Selecione um arquivo XML primeiro.</div>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            fileNameCache = file.name;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                let xml = e.target.result;
+                let originalXml = xml;
+                let divergencias = 0;
+                let somaNovaBC = 0;
+
+                const regexDet = /<(?:\w+:)?det\b[^>]*nItem="(\d+)"[^>]*>([\s\S]*?)<\/(?:\w+:)?det>/g;
+                let match;
+                
+                while ((match = regexDet.exec(originalXml)) !== null) {
+                    const fullDet = match[0];
+                    const nItem = match[1];
+                    
+                    // Captura vProd
+                    const vProdMatch = fullDet.match(/<(?:\w+:)?vProd>([\d\.]+)<\/(?:\w+:)?vProd>/);
+                    if (!vProdMatch) continue;
+                    const vProdStr = vProdMatch[1];
+                    const vProd = parseFloat(vProdStr);
+
+                    // Localiza o bloco do Imposto -> ICMS
+                    const impostoMatch = fullDet.match(/<(?:\w+:)?imposto>([\s\S]*?)<\/(?:\w+:)?imposto>/);
+                    if (!impostoMatch) continue;
+                    
+                    const icmsMatch = impostoMatch[1].match(/<(?:\w+:)?ICMS>([\s\S]*?)<\/(?:\w+:)?ICMS>/);
+                    if (!icmsMatch) continue;
+                    
+                    const innerICMS = icmsMatch[0];
+                    const vBCMatch = innerICMS.match(/<(?:\w+:)?vBC>([\d\.]+)<\/(?:\w+:)?vBC>/);
+                    
+                    if (vBCMatch) {
+                        const vBCStr = vBCMatch[1];
+                        const vBC = parseFloat(vBCStr);
+                        
+                        const diff = Math.round((vProd - vBC) * 100) / 100;
+                        // Apenas correções de arredondamento (1 a 5 centavos). Evita alterar bases reduzidas ou 0.00
+                        if (diff >= 0.01 && diff <= 0.05) {
+                            divergencias++;
+                            logArea.innerHTML += `<div class="log-item log-success">✅ Item ${nItem}: vBC do ICMS corrigido de ${vBCStr} para ${vProdStr} (Diferença: ${diff.toFixed(2)})</div>`;
+                            
+                            somaNovaBC += vProd; // Soma o valor corrigido
+
+                            const newInnerICMS = innerICMS.replace(/(<(?:\w+:)?vBC>)[\d\.]+(<\/(?:\w+:)?vBC>)/, `$1${vProdStr}$2`);
+                            const newDet = fullDet.replace(innerICMS, newInnerICMS);
+                            xml = xml.replace(fullDet, newDet);
+                        } else {
+                            somaNovaBC += vBC; // Se não for erro de centavos, mantém a BC original na soma
+                        }
+                    }
+                }
+
+                if (divergencias > 0) {
+                    const icmsTotMatch = xml.match(/(<(?:\w+:)?ICMSTot\b[\s\S]*?<(?:\w+:)?vBC>)([\d\.]+)([\s\S]*?<\/(?:\w+:)?ICMSTot>)/);
+                    if (icmsTotMatch) {
+                        xml = xml.replace(/(<(?:\w+:)?ICMSTot\b[\s\S]*?<(?:\w+:)?vBC>)[\d\.]+([\s\S]*?<\/(?:\w+:)?ICMSTot>)/, `$1${somaNovaBC.toFixed(2)}$2`);
+                        logArea.innerHTML += `<div class="log-item log-info">📌 Totalizador de vBC do ICMS atualizado para ${somaNovaBC.toFixed(2)}</div>`;
+                    }
+
+                    logArea.innerHTML += `<div class="log-item log-success">🎉 Análise concluída! ${divergencias} iten(s) precisam de correção.</div>`;
+                    
+                    xmlCorrigidoCache = xml;
+                    btnBaixar.style.display = 'block';
+                } else {
+                    logArea.innerHTML += `<div class="log-item log-warning">Nenhuma divergência de centavos (vProd vs vBC do ICMS) encontrada neste XML.</div>`;
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function baixarXMLCorrigido() {
+            if (!xmlCorrigidoCache) return;
+            const blob = new Blob([xmlCorrigidoCache], { type: 'application/xml' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "Corrigido_BC_" + fileNameCache;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
 
         function processarXML() {
             const fileInput = document.getElementById('fileInput');
@@ -219,6 +438,35 @@
             reader.onload = function(e) {
                 let xml = e.target.result;
                 try {
+                    const NFE_NS = "http://www.portalfiscal.inf.br/nfe";
+
+                    function extractTagValue(source, tag) {
+                        const match = source.match(new RegExp(`<(?:\\w+:)?${tag}>([\\s\\S]*?)<\\/(?:\\w+:)?${tag}>`));
+                        return match ? match[1] : "";
+                    }
+
+                    function ensureNfeProcEnvelope(source) {
+                        if (/<(?:\w+:)?nfeProc\b/.test(source)) {
+                            if (/<protNFe\b(?![^>]*xmlns=)/.test(source)) {
+                                source = source.replace(/<protNFe\b/, `<protNFe xmlns="${NFE_NS}"`);
+                            }
+                            return source;
+                        }
+
+                        const nfeMatch = source.match(/<(?:\w+:)?NFe\b[\s\S]*?<\/(?:\w+:)?NFe>/);
+                        if (!nfeMatch) return source;
+
+                        const nfeBlock = nfeMatch[0];
+                        const infNFeTag = nfeBlock.match(/<(?:\w+:)?infNFe\b[^>]*>/);
+                        const infNFeId = infNFeTag ? infNFeTag[0].match(/Id="([^"]+)"/) : null;
+                        const chNFe = infNFeId ? infNFeId[1].replace(/^NFe/, "") : "";
+                        const tpAmb = extractTagValue(nfeBlock, "tpAmb") || "1";
+                        const dhRecbto = extractTagValue(nfeBlock, "dhEmi") || new Date().toISOString();
+
+                        const protNFe = `<protNFe versao="4.00" xmlns="${NFE_NS}"><infProt><tpAmb>${tpAmb}</tpAmb><verAplic>ALTERNFE</verAplic><chNFe>${chNFe}</chNFe><dhRecbto>${dhRecbto}</dhRecbto><nProt>000000000000000</nProt><digVal></digVal><cStat>100</cStat><xMotivo>Autorizado o uso da NF-e</xMotivo></infProt></protNFe>`;
+                        return `<?xml version="1.0" encoding="UTF-8"?><nfeProc versao="4.00" xmlns="${NFE_NS}">${nfeBlock}${protNFe}</nfeProc>`;
+                    }
+
                     // --- 1. CORREÇÕES ESTRUTURAIS CONDICIONAIS ---
                     if (xml.includes('MaceiÃ³')) {
                         xml = xml.replace(/MaceiÃ³/g, 'Maceió');
@@ -238,53 +486,219 @@
                         });
                     }
 
+                    if (!/<(?:\w+:)?NFe\b/.test(xml) || !/<(?:\w+:)?infNFe\b/.test(xml)) {
+                        throw new Error("Estrutura inválida: XML não contém os blocos obrigatórios da NFe.");
+                    }
+
                     // --- 2. RECÁLCULO DOS VALORES ---
-                    const matchTotalAtual = xml.match(/<ICMSTot>[\s\S]*?<vProd>([\d\.]+)<\/vProd>/);
+                    const tagPattern = (tag) => `<(?:\\w+:)?${tag}>`;
+                    const closeTagPattern = (tag) => `<\\/(?:\\w+:)?${tag}>`;
+
+                    const matchTotalAtual = xml.match(new RegExp(`${tagPattern('ICMSTot')}[\\s\\S]*?${tagPattern('vProd')}([\\d\\.]+)${closeTagPattern('vProd')}`));
                     if (!matchTotalAtual) throw new Error("Tag <vProd> não encontrada no totalizador.");
                     
                     const valorAtual = parseFloat(matchTotalAtual[1]);
                     const fator = novoTotal / valorAtual;
 
-                    const regexDet = /<det nItem="\d+">[\s\S]*?<\/det>/g;
+                    const regexDet = /<(?:\w+:)?det\b[^>]*nItem="\d+"[^>]*>[\s\S]*?<\/(?:\w+:)?det>/g;
                     const dets = xml.match(regexDet);
-                    let somaNovosProdutos = 0.0;
+                    if (!dets || dets.length === 0) throw new Error("Nenhum item <det> encontrado no XML.");
+                    
+                    // Para cada item: encontrar vUnCom com 4 casas decimais tal que
+                    // round(qCom × vUnCom, 2) === vProd desejado.
+                    // O Access 2003 simplesmente faz: qCom × vUnCom → arredonda para 2 casas.
+                    
+                    function simpleCalc(q, u) {
+                        return Math.round(q * u * 100) / 100;
+                    }
+                    
+                    function findBestVUnCom(vProdTarget, q) {
+                        let baseRaw = vProdTarget / q;
+                        // Gera candidatos: round, ceil, floor + variações de ±10 steps
+                        let base = Math.round(baseRaw * 10000) / 10000;
+                        let candidates = new Set();
+                        candidates.add(Math.round(baseRaw * 10000) / 10000);
+                        candidates.add(Math.ceil(baseRaw * 10000) / 10000);
+                        candidates.add(Math.floor(baseRaw * 10000) / 10000);
+                        for (let d = -10; d <= 10; d++) {
+                            candidates.add(Math.round((base + d * 0.0001) * 10000) / 10000);
+                        }
+                        for (let c of candidates) {
+                            if (simpleCalc(q, c) === vProdTarget) return c;
+                        }
+                        return null;
+                    }
+
+                    let arr = [];
+                    let somaProporcional = 0;
 
                     dets.forEach((det, index) => {
-                        let vProdAntigo = parseFloat(det.match(/<vProd>([\d\.]+)<\/vProd>/)[1]);
-                        let qCom = parseFloat(det.match(/<qCom>([\d\.]+)<\/qCom>/)[1]);
-                        let qTrib = parseFloat(det.match(/<qTrib>([\d\.]+)<\/qTrib>/)[1]);
+                        let vProdAntigo = parseFloat(det.match(/<(?:\w+:)?vProd>([\d\.]+)<\/(?:\w+:)?vProd>/)[1]);
+                        let qCom = parseFloat(det.match(/<(?:\w+:)?qCom>([\d\.]+)<\/(?:\w+:)?qCom>/)[1]);
+                        let qTrib = parseFloat(det.match(/<(?:\w+:)?qTrib>([\d\.]+)<\/(?:\w+:)?qTrib>/)[1]);
 
-                        let vProdNovo;
+                        let vProdIdeal = vProdAntigo * fator;
+                        let vProdRounded;
                         if (index === dets.length - 1) {
-                            vProdNovo = +(novoTotal - somaNovosProdutos).toFixed(2);
+                            vProdRounded = Math.round((novoTotal - somaProporcional) * 100) / 100;
                         } else {
-                            vProdNovo = +(vProdAntigo * fator).toFixed(2);
-                            somaNovosProdutos += vProdNovo;
+                            vProdRounded = Math.round(vProdIdeal * 100) / 100;
+                            somaProporcional += vProdRounded;
                         }
 
-                        let vUnComNovo = vProdNovo / qCom;
-                        let vUnTribNovo = vProdNovo / qTrib;
-
-                        let detNovo = det.replace(/<vProd>[\d\.]+<\/vProd>/, `<vProd>${vProdNovo.toFixed(2)}</vProd>`);
-                        detNovo = detNovo.replace(/<vUnCom>[\d\.]+<\/vUnCom>/, `<vUnCom>${vUnComNovo.toFixed(10)}</vUnCom>`);
-                        detNovo = detNovo.replace(/<vUnTrib>[\d\.]+<\/vUnTrib>/, `<vUnTrib>${vUnTribNovo.toFixed(10)}</vUnTrib>`);
+                        let vUnCom = findBestVUnCom(vProdRounded, qCom);
+                        let vProdReal;
                         
-                        if (detNovo.includes('<vItem>')) {
-                            detNovo = detNovo.replace(/<vItem>[\d\.]+<\/vItem>/, `<vItem>${vProdNovo.toFixed(2)}</vItem>`);
+                        if (vUnCom !== null) {
+                            vProdReal = vProdRounded;
+                        } else {
+                            // Fallback: usa melhor valor e deixa ajuste de centavo corrigir
+                            vUnCom = Math.round((vProdRounded / qCom) * 10000) / 10000;
+                            vProdReal = simpleCalc(qCom, vUnCom);
+                        }
+                        
+                        let vUnTrib = Math.round((vProdReal / qTrib) * 10000) / 10000;
+                        // Verifica se vUnTrib × qTrib bate com vProdReal
+                        if (simpleCalc(qTrib, vUnTrib) !== vProdReal) {
+                            // Tenta variações
+                            for (let d of [0.0001, -0.0001, 0.0002, -0.0002]) {
+                                let t = Math.round((vUnTrib + d) * 10000) / 10000;
+                                if (simpleCalc(qTrib, t) === vProdReal) { vUnTrib = t; break; }
+                            }
+                        }
+                        arr.push({ det, qCom, qTrib, vUnCom, vUnTrib, vProdReal });
+                    });
+
+                    function getSums(array) {
+                        let exactRaw = 0;
+                        let vprod = 0;
+                        for (let i of array) {
+                            exactRaw += (i.qCom * i.vUnCom);
+                            vprod += simpleCalc(i.qCom, i.vUnCom);
+                        }
+                        return {
+                            exactRaw: exactRaw,
+                            exact: Math.round(exactRaw * 100) / 100,
+                            vprod: Math.round(vprod * 100) / 100
+                        };
+                    }
+
+                    let iter = 0;
+                    let maxIters = 20000;
+
+                    while (iter < maxIters) {
+                        iter++;
+                        let sums = getSums(arr);
+                        let diffExact = Math.round((novoTotal - sums.exact) * 100);
+                        let diffVProd = Math.round((novoTotal - sums.vprod) * 100);
+                        
+                        if (diffExact === 0 && diffVProd === 0) break;
+                        
+                        let bestItem = null;
+                        let bestMove = 0;
+                        let bestScore = -999999;
+                        
+                        let distExactBefore = Math.abs(novoTotal - sums.exactRaw);
+                        let distVProdBefore = Math.abs(diffVProd);
+                        
+                        for (let item of arr) {
+                            for (let sign of [1, -1]) {
+                                for (let mult = 1; mult <= 5; mult++) {
+                                    let move = sign * mult * 0.0001;
+                                    let newU = Math.round((item.vUnCom + move) * 10000) / 10000;
+                                    
+                                    let oldE = item.qCom * item.vUnCom;
+                                    let newE = item.qCom * newU;
+                                    
+                                    let oldV = simpleCalc(item.qCom, item.vUnCom);
+                                    let newV = simpleCalc(item.qCom, newU);
+                                    
+                                    let dE = newE - oldE;
+                                    let dV = Math.round((newV - oldV) * 100);
+                                    
+                                    let newExactRaw = sums.exactRaw + dE;
+                                    let newExactRounded = Math.round(newExactRaw * 100) / 100;
+                                    let newVProdSum = Math.round((sums.vprod * 100 + dV)) / 100;
+                                    
+                                    let distExactAfter = Math.abs(novoTotal - newExactRaw);
+                                    let distVProdAfter = Math.abs(Math.round((novoTotal - newVProdSum) * 100));
+                                    
+                                    let exactImprovement = distExactBefore - distExactAfter;
+                                    let vprodImprovement = distVProdBefore - distVProdAfter;
+                                    
+                                    let score = 0;
+                                    
+                                    if (diffExact === 0 && Math.abs(novoTotal - newExactRounded) > 0) score -= 10000;
+                                    if (diffVProd === 0 && Math.abs(novoTotal - newVProdSum) > 0) score -= 10000;
+                                    
+                                    if (diffExact !== 0 && diffVProd === 0) {
+                                        score += exactImprovement * 1000 + vprodImprovement * 10;
+                                    } else if (diffVProd !== 0 && diffExact === 0) {
+                                        score += vprodImprovement * 1000 + exactImprovement * 10;
+                                    } else {
+                                        score += exactImprovement * 100 + vprodImprovement * 100;
+                                    }
+                                    
+                                    score += Math.random() * 0.001; // tie-breaker
+                                    
+                                    if (score > bestScore) {
+                                        bestScore = score;
+                                        bestItem = item;
+                                        bestMove = move;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (bestItem && bestScore > -5000) {
+                            bestItem.vUnCom = Math.round((bestItem.vUnCom + bestMove) * 10000) / 10000;
+                            bestItem.vProdReal = simpleCalc(bestItem.qCom, bestItem.vUnCom);
+                        } else {
+                            let item = arr[Math.floor(Math.random() * arr.length)];
+                            let move = (Math.random() > 0.5 ? 1 : -1) * 0.0001;
+                            item.vUnCom = Math.round((item.vUnCom + move) * 10000) / 10000;
+                            item.vProdReal = simpleCalc(item.qCom, item.vUnCom);
+                        }
+                    }
+
+                    // Atualiza vUnTrib no final para todos os itens
+                    arr.forEach((item) => {
+                        item.vUnTrib = Math.round((item.vProdReal / item.qTrib) * 10000) / 10000;
+                        if (simpleCalc(item.qTrib, item.vUnTrib) !== item.vProdReal) {
+                            for (let d of [0.0001, -0.0001, 0.0002, -0.0002]) {
+                                let t = Math.round((item.vUnTrib + d) * 10000) / 10000;
+                                if (simpleCalc(item.qTrib, t) === item.vProdReal) { item.vUnTrib = t; break; }
+                            }
+                        }
+                    });
+
+                    arr.forEach((item) => {
+                        let strUnComNovo = item.vUnCom.toFixed(4);
+                        let strUnTribNovo = item.vUnTrib.toFixed(4);
+                        let vProdNovoFormatado = item.vProdReal.toFixed(2);
+
+                        let detNovo = item.det.replace(/(<(?:\w+:)?vProd>)[\d\.]+(<\/(?:\w+:)?vProd>)/g, `$1${vProdNovoFormatado}$2`);
+                        detNovo = detNovo.replace(/(<(?:\w+:)?vUnCom>)[\d\.]+(<\/(?:\w+:)?vUnCom>)/g, `$1${strUnComNovo}$2`);
+                        detNovo = detNovo.replace(/(<(?:\w+:)?vUnTrib>)[\d\.]+(<\/(?:\w+:)?vUnTrib>)/g, `$1${strUnTribNovo}$2`);
+                        
+                        if (/<(?:\w+:)?vItem>/.test(detNovo)) {
+                            detNovo = detNovo.replace(/(<(?:\w+:)?vItem>)[\d\.]+(<\/(?:\w+:)?vItem>)/, `$1${vProdNovoFormatado}$2`);
                         }
 
-                        xml = xml.replace(det, detNovo);
+                        xml = xml.replace(item.det, detNovo);
                     });
 
                     // --- 3. ATUALIZAÇÃO DOS TOTALIZADORES ---
-                    xml = xml.replace(/(<ICMSTot>[\s\S]*?<vProd>)[\d\.]+([\s\S]*?<\/vProd>)/, `$1${novoTotal.toFixed(2)}$2`);
+                    xml = xml.replace(/(<(?:\w+:)?ICMSTot\b[\s\S]*?<(?:\w+:)?vProd>)[\d\.]+([\s\S]*?<\/(?:\w+:)?vProd>)/, `$1${novoTotal.toFixed(2)}$2`);
 
-                    const icmsTotBlock = xml.match(/<ICMSTot>[\s\S]*?<\/ICMSTot>/)[0];
+                    const icmsMatch = xml.match(/<(?:\w+:)?ICMSTot\b[\s\S]*?<\/(?:\w+:)?ICMSTot>/);
+                    if (!icmsMatch) throw new Error("Bloco <ICMSTot> não encontrado para atualização.");
+                    const icmsTotBlock = icmsMatch[0];
                     let somaImpostos = 0.0;
                     const tagsImpostos = ['vII', 'vIPI', 'vPIS', 'vCOFINS', 'vOutro', 'vFrete', 'vSeg', 'vDesc', 'vST', 'vFCPST'];
                     
                     tagsImpostos.forEach(tag => {
-                        const matchTag = icmsTotBlock.match(new RegExp(`<${tag}>([\\d\\.]+)<\/${tag}>`));
+                        const matchTag = icmsTotBlock.match(new RegExp(`<(?:\\w+:)?${tag}>([\\d\\.]+)<\\/(?:\\w+:)?${tag}>`));
                         if (matchTag) {
                             if(tag === 'vDesc') {
                                 somaImpostos -= parseFloat(matchTag[1]);
@@ -296,10 +710,13 @@
 
                     const novoVnf = novoTotal + somaImpostos;
 
-                    xml = xml.replace(/(<ICMSTot>[\s\S]*?<vNF>)[\d\.]+([\s\S]*?<\/vNF>)/, `$1${novoVnf.toFixed(2)}$2`);
-                    xml = xml.replace(/<vNFTot>[\d\.]+<\/vNFTot>/, `<vNFTot>${novoVnf.toFixed(2)}</vNFTot>`);
+                    xml = xml.replace(/(<(?:\w+:)?ICMSTot\b[\s\S]*?<(?:\w+:)?vNF>)[\d\.]+([\s\S]*?<\/(?:\w+:)?vNF>)/, `$1${novoVnf.toFixed(2)}$2`);
+                    xml = xml.replace(/(<(?:\w+:)?vNFTot>)[\d\.]+(<\/(?:\w+:)?vNFTot>)/, `$1${novoVnf.toFixed(2)}$2`);
 
-                    // --- 4. DOWNLOAD AUTOMÁTICO ---
+                    // --- 4. GARANTIA DE ESTRUTURA DE SAÍDA ---
+                    xml = ensureNfeProcEnvelope(xml);
+
+                    // --- 5. DOWNLOAD AUTOMÁTICO ---
                     const blob = new Blob([xml], { type: 'text/xml' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
